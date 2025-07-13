@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# نمایش پیغام خوش‌آمدگویی
+echo "این اسکریپت به شما کمک می‌کند تا تونل SSH بین سرور داخلی و خارجی ایجاد کنید."
+
+# دریافت آدرس IP سرور داخلی
+current_ip=$(hostname -I | awk '{print $1}')
+echo "آدرس IP فعلی سرور شما (سرور داخلی): $current_ip"
+read -p "آیا این آدرس درست است؟ (اگر بله Enter بزنید، در غیر این صورت آدرس جدید را وارد کنید): " input_ip
+
+if [[ -n "$input_ip" ]]; then
+  current_ip=$input_ip
+fi
+
+# دریافت آدرس IP سرور خارجی (سرور که قرار است SSH به آن وصل شویم)
+read -p "آدرس IP یا نام دامنه سرور خارجی که می‌خواهید به آن SSH بزنید: " remote_server
+read -p "پورت SSH سرور خارجی (پیش‌فرض 22): " remote_port
+remote_port=${remote_port:-22}  # اگر پورت وارد نشد، پورت 22 پیش‌فرض باشد.
+
+# دریافت نام کاربری SSH
+read -p "نام کاربری SSH سرور خارجی: " username
+
+# دریافت آدرس IP یا نام سرویس داخلی و پورت داخلی
+read -p "آدرس IP یا نام سرور داخلی که به آن متصل خواهید شد: " internal_server
+read -p "پورت داخلی سرویس (مثلاً 80 برای وب سرور): " internal_port
+
+# نمایش اطلاعات وارد شده برای تایید
+echo ""
+echo "اطلاعات وارد شده:"
+echo "آدرس IP سرور داخلی: $current_ip"
+echo "آدرس IP یا نام سرور خارجی: $remote_server"
+echo "پورت SSH سرور خارجی: $remote_port"
+echo "نام کاربری SSH: $username"
+echo "آدرس سرور داخلی که می‌خواهید به آن متصل شوید: $internal_server"
+echo "پورت داخلی سرور: $internal_port"
+echo ""
+
+# تایید و ایجاد تونل SSH
+read -p "آیا مطمئن هستید که اطلاعات وارد شده درست است؟ (y/n): " confirm
+if [[ $confirm =~ ^[Yy]$ ]]; then
+  # فرمان SSH برای ایجاد تونل
+  if command -v ssh &>/dev/null; then
+    # اگر دستور ssh موجود است، تلاش برای اتصال
+    ssh -N -L $internal_port:$internal_server:$internal_port -p $remote_port $username@$remote_server
+    if [ $? -ne 0 ]; then
+      echo "اتصال SSH با مشکل مواجه شد. لطفاً اطلاعات خود را بررسی کنید."
+    fi
+  else
+    echo "دستور ssh یافت نشد. لطفاً SSH را نصب کنید."
+  fi
+else
+  echo "فرآیند متوقف شد. لطفاً دوباره اسکریپت را اجرا کنید."
+fi
