@@ -37,8 +37,10 @@ if [[ $confirm == "y" || $confirm == "Y" ]]; then
   ssh -N -L $internal_port:$current_ip:$internal_port -p $remote_port $username@$remote_server
   if [ $? -eq 0 ]; then
     echo "تونل SSH با موفقیت ایجاد شد!"
+    echo "برای بستن تونل، کافیست اتصال SSH را قطع کنید."
   else
     echo "خطا در ایجاد تونل SSH. لطفاً بررسی کنید که اتصال SSH امکان‌پذیر است."
+    echo "اطمینان حاصل کنید که پورت 22 یا پورت SSH دیگری که مشخص کرده‌اید باز است."
   fi
 else
   echo "فرآیند متوقف شد. لطفاً دوباره اسکریپت را اجرا کنید."
