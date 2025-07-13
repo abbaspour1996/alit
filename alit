@@ -35,6 +35,11 @@ read -p "آیا مطمئن هستید که اطلاعات وارد شده درس
 if [[ $confirm == "y" || $confirm == "Y" ]]; then
   # فرمان SSH برای ایجاد تونل
   ssh -N -L $internal_port:$current_ip:$internal_port -p $remote_port $username@$remote_server
+  if [ $? -eq 0 ]; then
+    echo "تونل SSH با موفقیت ایجاد شد!"
+  else
+    echo "خطا در ایجاد تونل SSH. لطفاً بررسی کنید که اتصال SSH امکان‌پذیر است."
+  fi
 else
   echo "فرآیند متوقف شد. لطفاً دوباره اسکریپت را اجرا کنید."
 fi
